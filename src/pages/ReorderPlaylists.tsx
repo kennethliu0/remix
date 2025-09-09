@@ -15,7 +15,7 @@ const ReorderPlaylists = () => {
   const spotify = useSpotify(
     import.meta.env.VITE_SPOTIFY_CLIENT_ID,
     import.meta.env.VITE_REDIRECT_TARGET,
-    Scopes.playlistModify
+    [...Scopes.playlistModify, ...Scopes.playlistRead]
   );
 
   const [playlists, setPlaylists] = useState<Playlist<TrackItem>[]>([]);
