@@ -12,17 +12,18 @@ export function useSpotify(
 
   useEffect(() => {
     (async () => {
-      const sdk = SpotifyApi.withUserAuthorization(
+      const internalSdk = SpotifyApi.withUserAuthorization(
         clientId,
         redirectUrl,
-        scopes
+        activeScopes,
+        config
       );
 
       try {
-        const { authenticated } = await sdk.authenticate();
+        const { authenticated } = await internalSdk.authenticate();
 
         if (authenticated) {
-          setSdk(() => sdk);
+          setSdk(() => internalSdk);
         }
       } catch (e: Error | unknown) {
         const error = e as Error;

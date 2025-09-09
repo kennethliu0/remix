@@ -10,17 +10,31 @@ export async function getFeatures(data: string[]) {
     redirect: "follow" as RequestRedirect,
   };
 
-  const response = await fetch(
-    `https://api.reccobeats.com/v1/audio-features?ids=${data.join(",")}`,
-    requestOptions
-  );
-  const urlPrefx = "https://open.spotify.com/track/";
+  const batchSize = 40;
+  const allFeatures = [];
+
+  // Split data into batches and fetch
+  const promises = [];
+  for (let i = 0; i < data.length; i += batchSize) {
+    const batch = data.slice(i, i + batchSize);
+    promises.push(
+      fetch(
+        `https://api.reccobeats.com/v1/audio-features?ids=${batch.join(",")}`,
+        requestOptions
+      ).then((response) => response.json())
+    );
+  }
+  const results = await Promise.all(promises);
+  for (const result of results) {
+    allFeatures.push(...result.content);
+  }
+
+  const urlPrefix = "https://open.spotify.com/track/";
   const map = new Map(data.map((d, i) => [d, i]));
-  const features = await response.json();
   const points: Points = new Array(data.length);
 
-  for (const f of features.content) {
-    const index = map.get(f.href.slice(urlPrefx.length));
+  for (const f of allFeatures) {
+    const index = map.get(f.href.slice(urlPrefix.length));
     if (index === undefined) continue;
     points[index] = new Float32Array([
       f.acousticness ?? 0.5,
@@ -34,6 +48,7 @@ export async function getFeatures(data: string[]) {
     ]);
   }
   const avg = averagePoint(points);
+  // fill in missing points with average
   for (let i = 0; i < points.length; i++) {
     if (!points[i]) {
       points[i] = new Float32Array(avg);
