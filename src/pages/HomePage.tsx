@@ -18,6 +18,15 @@ function HomePage() {
           <li>Create new, reordered playlists in Spotify</li>
         </ul>
       </div>
+      <p style={{ fontWeight: "bold" }}>
+        Please fill out this{" "}
+        <a
+          style={{ color: "var(--color-primary)", fontWeight: "bold" }}
+          href="https://forms.gle/SidgQhQ47pzUhK81A">
+          form
+        </a>{" "}
+        to get access
+      </p>
       <Link
         className="login-btn"
         to="/playlists">
