@@ -1,3 +1,3 @@
 # Remix
 
-This web application reorders Spotify playlists according to audio features.
+React.js web application that reorders Spotify playlists according to audio features.
